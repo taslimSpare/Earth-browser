@@ -4,12 +4,13 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import org.mozilla.reference.browser.R
 import org.mozilla.reference.browser.databinding.FragmentNewsletterListingBinding
 
-class NewsletterListingFragment : Fragment() {
+class NewsletterListingFragment : Fragment(), NewsletterAdapter.NewsLetterClickListener {
 
     private var _binding: FragmentNewsletterListingBinding? = null
     private val binding get() = _binding!!
@@ -26,6 +27,8 @@ class NewsletterListingFragment : Fragment() {
         (activity as AppCompatActivity).title = getString(R.string.preferences_newsletters_page)
 
         val newsletterAdapter = NewsletterAdapter()
+        newsletterAdapter.newsLetterClickListener = this
+
         newsletterAdapter.submitList(listOf(
             NewsletterAdapter.Newsletter(
                 id = "1",
@@ -45,6 +48,10 @@ class NewsletterListingFragment : Fragment() {
         ))
 
         binding.newsletterRecycler.adapter = newsletterAdapter
+    }
+
+    override fun onNewsLetterClicked(newsletter: NewsletterAdapter.Newsletter) {
+        // Logic for creating and downloading the txt file
     }
 
     override fun onDestroyView() {

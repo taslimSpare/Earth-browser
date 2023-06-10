@@ -9,12 +9,14 @@ import org.mozilla.reference.browser.databinding.NewsletterItemBinding
 
 class NewsletterAdapter : ListAdapter<NewsletterAdapter.Newsletter, NewsletterAdapter.ViewHolder>(NewsletterDiffUtilCallBack()) {
 
+    var newsLetterClickListener: NewsLetterClickListener? = null
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         return ViewHolder(parent)
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.bind(getItem(position))
+        holder.bind(getItem(position), newsLetterClickListener)
     }
 
     class ViewHolder(private val binding: NewsletterItemBinding) : RecyclerView.ViewHolder(binding.root) {
@@ -22,9 +24,13 @@ class NewsletterAdapter : ListAdapter<NewsletterAdapter.Newsletter, NewsletterAd
             NewsletterItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
         )
 
-        fun bind(newsletter: Newsletter) {
+        fun bind(newsletter: Newsletter, newsLetterClickListener: NewsLetterClickListener?) {
             binding.title.text = newsletter.title
             binding.subText.text = newsletter.shortDescription
+
+            binding.root.setOnClickListener {
+                newsLetterClickListener?.onNewsLetterClicked(newsletter)
+            }
         }
     }
 
@@ -33,6 +39,10 @@ class NewsletterAdapter : ListAdapter<NewsletterAdapter.Newsletter, NewsletterAd
 
         override fun areContentsTheSame(oldItem: Newsletter, newItem: Newsletter) = oldItem == newItem
 
+    }
+
+    interface NewsLetterClickListener {
+        fun onNewsLetterClicked(newsletter: Newsletter)
     }
 
     data class Newsletter(
