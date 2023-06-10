@@ -20,4 +20,13 @@
         tools:itemCount="3"
         tools:listitem="@layout/newsletter_item" />
 
+    <include
+        android:id="@+id/addonProgressOverlay"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:visibility="gone"
+        layout="@layout/overlay_add_on_progress"
+        app:layout_constraintBottom_toBottomOf="parent"/>
+
 </androidx.constraintlayout.widget.ConstraintLayout>
