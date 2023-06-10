@@ -242,7 +242,10 @@ class SettingsFragment : PreferenceFragmentCompat() {
 
     private fun getClickListenerForNewsletterDownload(): OnPreferenceClickListener {
         return OnPreferenceClickListener {
-            Toast.makeText(requireContext(), "Gotten here!", LENGTH_SHORT).show()
+            parentFragmentManager.beginTransaction()
+                .replace(android.R.id.content, NewsletterListingFragment())
+                .addToBackStack(null)
+                .commit()
             true
         }
     }

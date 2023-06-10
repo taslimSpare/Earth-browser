@@ -56,6 +56,9 @@
     <!-- Preference about page -->
     <string name="preferences_about_page">About Reference Browser</string>
 
+    <!-- Preference about page -->
+    <string name="preferences_newsletters_page">Earth Newsletters</string>
+
     <!-- Preference for signing in -->
     <string name="sign_in">Sign in</string>
 
@@ -158,7 +161,7 @@
 
     <!-- Summary of the notification shown on app startup informing about the data policy -->
     <string name="datareporting_notification_summary">To improve your experience, Reference Browser automatically sends some information to Mozilla.</string>
-    
+
     <string name="default_notification_channel">Browser</string>
 
     <!-- About content -->
