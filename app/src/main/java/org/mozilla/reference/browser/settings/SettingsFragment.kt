@@ -73,6 +73,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
         val privacyKey = requireContext().getPreferenceKey(pref_key_privacy)
         val customAddonsKey = requireContext().getPreferenceKey(pref_key_override_amo_collection)
         val autofillPreferenceKey = requireContext().getPreferenceKey(R.string.pref_key_autofill)
+        val newsletterDownloadKey = requireContext().getPreferenceKey(R.string.pref_key_download_newsletters)
 
         val preferenceSignIn = findPreference<Preference>(signInKey)
         val preferencePairSignIn = findPreference<Preference>(signInPairKey)
@@ -83,6 +84,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
         val preferencePrivacy = findPreference<Preference>(privacyKey)
         val preferenceCustomAddons = findPreference<Preference>(customAddonsKey)
         val preferenceAutofill = findPreference<AutofillPreference>(autofillPreferenceKey)
+        val preferenceNewsletterDownload = findPreference<Preference>(newsletterDownloadKey)
 
         val accountManager = requireComponents.backgroundServices.accountManager
         if (accountManager.authenticatedAccount() != null) {
@@ -110,6 +112,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
         preferenceAboutPage?.onPreferenceClickListener = getAboutPageListener()
         preferencePrivacy?.onPreferenceClickListener = getClickListenerForPrivacy()
         preferenceCustomAddons?.onPreferenceClickListener = getClickListenerForCustomAddons()
+        preferenceNewsletterDownload?.onPreferenceClickListener = getClickListenerForNewsletterDownload()
     }
 
     private fun getClickListenerForMakeDefaultBrowser(): OnPreferenceClickListener {
@@ -236,6 +239,14 @@ class SettingsFragment : PreferenceFragmentCompat() {
             true
         }
     }
+
+    private fun getClickListenerForNewsletterDownload(): OnPreferenceClickListener {
+        return OnPreferenceClickListener {
+            Toast.makeText(requireContext(), "Gotten here!", LENGTH_SHORT).show()
+            true
+        }
+    }
+
     companion object {
         private const val AMO_COLLECTION_OVERRIDE_EXIT_DELAY = 3000L
     }

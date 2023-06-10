@@ -3,7 +3,7 @@
    - License, v. 2.0. If a copy of the MPL was not distributed with this
    - file, You can obtain one at http://mozilla.org/MPL/2.0/. -->
 <resources>
-    <string name="app_name">Reference Browser</string>
+    <string name="app_name">Earth Browser</string>
 
     <!-- Text shown in the toolbar if it is empty -->
     <string name="toolbar_hint">Search or enter address</string>
@@ -17,6 +17,9 @@
 
     <!-- Preference summary for settings related sign in -->
     <string name="preferences_sign_in_summary">Sync your tabs and history</string>
+
+    <!-- Preference summary for downloading newsletters -->
+    <string name="preferences_download_newsletters">Read our richly curated weekly messages</string>
 
     <!-- Preference summary for pairing sign in -->
     <string name="preferences_pair_sign_in_summary">Pair with Firefox Desktop</string>
@@ -55,6 +58,9 @@
 
     <!-- Preference for signing in -->
     <string name="sign_in">Sign in</string>
+
+    <!-- Preference for downloading newsletters -->
+    <string name="download_newsletters">Download newsletters</string>
 
     <!-- Preference for signing in -->
     <string name="pair_sign_in">Sign in with a QR code</string>
@@ -148,7 +154,7 @@
      ]]></string>
 
     <!-- Title of the notification shown on app startup informing about the data policy -->
-    <string name="datareporting_notification_title">Reference Browser</string>
+    <string name="datareporting_notification_title">Earth Browser</string>
 
     <!-- Summary of the notification shown on app startup informing about the data policy -->
     <string name="datareporting_notification_summary">To improve your experience, Reference Browser automatically sends some information to Mozilla.</string>
