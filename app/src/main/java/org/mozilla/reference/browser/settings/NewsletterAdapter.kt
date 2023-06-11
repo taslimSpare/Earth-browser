@@ -48,7 +48,8 @@ class NewsletterAdapter : ListAdapter<NewsletterAdapter.Newsletter, NewsletterAd
     data class Newsletter(
         val id: String,
         val title: String,
-        val shortDescription: String
+        val shortDescription: String,
+        val content: String
     )
 
 }

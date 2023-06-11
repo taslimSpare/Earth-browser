@@ -177,6 +177,7 @@
 
     <string name="menu_share_with">Share with…</string>
     <string name="toast_copied">Copied!</string>
+    <string name="download">Download</string>
 
     <!-- Send Tab -->
     <!-- Name of the "receive tabs" notification channel. Displayed in the "App notifications" system settings for the app -->
