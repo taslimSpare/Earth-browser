@@ -3,6 +3,7 @@ package org.mozilla.reference.browser.settings
 import android.app.Activity
 import android.app.AlertDialog
 import android.app.Dialog
+import android.app.DownloadManager
 import android.content.Intent
 import android.os.Bundle
 import android.os.Environment
@@ -106,7 +107,6 @@ class NewsletterListingFragment : Fragment(), NewsletterAdapter.NewsLetterClickL
         if (requestCode == 10001 && resultCode == Activity.RESULT_OK) {
             data?.data?.let { destUri ->
 
-                Toast.makeText(requireContext(), "Saved successfully", Toast.LENGTH_SHORT).show()
                 val inputStream = FileInputStream(file)
                 val outputStream = requireActivity().contentResolver?.openOutputStream(destUri)
 
@@ -115,6 +115,17 @@ class NewsletterListingFragment : Fragment(), NewsletterAdapter.NewsLetterClickL
                         input.copyTo(output)
                     }
                 }
+
+                AlertDialog.Builder(requireContext())
+                    .setTitle("Download successful")
+                    .setMessage("Launch downloads folder?")
+                    .setPositiveButton("Yes") { _, _ ->
+                        startActivity(Intent(DownloadManager.ACTION_VIEW_DOWNLOADS))
+                    }
+                    .setNegativeButton("Nope") { _, _ ->
+                        Toast.makeText(requireContext(), "You can view the file anytime in your downloads", Toast.LENGTH_SHORT).show()
+                    }
+                    .show()
             }
         }
     }
