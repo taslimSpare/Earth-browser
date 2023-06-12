@@ -1,8 +1,9 @@
 package org.mozilla.reference.browser.settings
 
+import android.app.Activity
 import android.app.Dialog
-import android.app.DownloadManager
-import android.content.Context
+import android.content.ContentResolver
+import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.os.Environment
@@ -12,17 +13,19 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.FileProvider
 import androidx.fragment.app.Fragment
 import org.mozilla.reference.browser.R
 import org.mozilla.reference.browser.databinding.FragmentNewsletterListingBinding
 import org.mozilla.reference.browser.ext.showEditTextDialog
 import java.io.File
+import java.io.FileOutputStream
 
 class NewsletterListingFragment : Fragment(), NewsletterAdapter.NewsLetterClickListener {
 
     private var _binding: FragmentNewsletterListingBinding? = null
     private val binding get() = _binding!!
+    var uri: Uri? = null
+    var contentResolver: ContentResolver? = null
 
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
@@ -62,27 +65,6 @@ class NewsletterListingFragment : Fragment(), NewsletterAdapter.NewsLetterClickL
         binding.newsletterRecycler.adapter = newsletterAdapter
     }
 
-    private fun createFile(fileName: String, content: String): File {
-        val name = "${fileName}.txt"
-        val file = File(Environment.getExternalStorageDirectory(), name)
-        file.writeText(content)
-
-        return file
-    }
-
-    private fun initiateFileDownload(context: Context, fileUri: Uri, fileName: String, tempFile: File) {
-        val downloadManager = context.getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager
-
-        val request = DownloadManager.Request(fileUri)
-            .setTitle(fileName)
-            .setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
-            .setDestinationUri(
-                Uri.fromFile(tempFile)
-            )
-
-        downloadManager.enqueue(request)
-    }
-
     override fun onNewsLetterClicked(newsletter: NewsletterAdapter.Newsletter) {
         val nameDialog = Dialog(requireContext())
         nameDialog.showEditTextDialog(
@@ -90,24 +72,47 @@ class NewsletterListingFragment : Fragment(), NewsletterAdapter.NewsLetterClickL
             newsletter.title
         ) { name ->
             try {
-                val file = createFile(name, newsletter.content)
-//                Toast.makeText(requireContext(), "File created with name ${file.name}", Toast.LENGTH_SHORT).show()
 
-                // Create temporary file
-                val uri = FileProvider.getUriForFile(requireContext(), "org.mozilla.reference.fileprovider", file)
+                contentResolver = requireActivity().contentResolver
 
-                val cacheDir = requireContext().externalCacheDir ?: requireContext().cacheDir
-                val tempFile = File(cacheDir, file.name)
-                file.copyTo(tempFile, overwrite = true)
+                val file = File(requireContext().getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS), "${name}.txt")
+                val fileOutputStream = FileOutputStream(file)
+                fileOutputStream.write(newsletter.content.toByteArray())
+                fileOutputStream.close()
 
-                initiateFileDownload(requireContext(), uri, name, tempFile)
+                val intent = Intent(Intent.ACTION_CREATE_DOCUMENT).apply {
+                    addCategory(Intent.CATEGORY_OPENABLE)
+                    type = "text/plain"
+                    putExtra(Intent.EXTRA_TITLE, "${name}.txt")
+                }
+
+                startActivityForResult(intent, 10001)
+
             } catch (e: Exception) {
                 Toast.makeText(requireContext(), e.message, Toast.LENGTH_SHORT).show()
                 Log.d("PPPPPP", e.message.toString())
-                e.localizedMessage?.let { Log.d("PPPPPP", it.toString()) }
             }
         }
     }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+
+        if (requestCode == 10001 && resultCode == Activity.RESULT_OK) {
+            data?.data?.let { destUri ->
+
+                val inputStream = contentResolver?.openInputStream(uri!!)
+                val outputStream = contentResolver?.openOutputStream(destUri)
+
+                inputStream?.use { input ->
+                    outputStream?.use { output ->
+                        input.copyTo(output)
+                    }
+                }
+            }
+        }
+    }
+
 
     override fun onDestroyView() {
         _binding = null
