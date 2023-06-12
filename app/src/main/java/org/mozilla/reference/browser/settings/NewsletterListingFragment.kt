@@ -3,9 +3,7 @@ package org.mozilla.reference.browser.settings
 import android.app.Activity
 import android.app.AlertDialog
 import android.app.Dialog
-import android.content.ContentResolver
 import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
 import android.os.Environment
 import android.util.Log
@@ -19,14 +17,14 @@ import org.mozilla.reference.browser.R
 import org.mozilla.reference.browser.databinding.FragmentNewsletterListingBinding
 import org.mozilla.reference.browser.ext.showEditTextDialog
 import java.io.File
+import java.io.FileInputStream
 import java.io.FileOutputStream
 
 class NewsletterListingFragment : Fragment(), NewsletterAdapter.NewsLetterClickListener {
 
     private var _binding: FragmentNewsletterListingBinding? = null
     private val binding get() = _binding!!
-    var uri: Uri? = null
-    var contentResolver: ContentResolver? = null
+    var file: File? = null
 
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
@@ -77,10 +75,7 @@ class NewsletterListingFragment : Fragment(), NewsletterAdapter.NewsLetterClickL
                 .setMessage("Proceed to download ${name}.txt?")
                 .setPositiveButton("Yes") { _, _ ->
                     try {
-
-                        contentResolver = requireActivity().contentResolver
-
-                        val file = File(requireContext().getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS), "${name}.txt")
+                        file = File(requireContext().getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS), "${name}.txt")
                         val fileOutputStream = FileOutputStream(file)
                         fileOutputStream.write(newsletter.content.toByteArray(Charsets.UTF_8))
                         fileOutputStream.close()
@@ -112,14 +107,14 @@ class NewsletterListingFragment : Fragment(), NewsletterAdapter.NewsLetterClickL
             data?.data?.let { destUri ->
 
                 Toast.makeText(requireContext(), "Saved successfully", Toast.LENGTH_SHORT).show()
-//                val inputStream = contentResolver?.openInputStream(uri!!)
-//                val outputStream = contentResolver?.openOutputStream(destUri)
-//
-//                inputStream?.use { input ->
-//                    outputStream?.use { output ->
-//                        input.copyTo(output)
-//                    }
-//                }
+                val inputStream = FileInputStream(file)
+                val outputStream = requireActivity().contentResolver?.openOutputStream(destUri)
+
+                inputStream.use { input ->
+                    outputStream?.use { output ->
+                        input.copyTo(output)
+                    }
+                }
             }
         }
     }
