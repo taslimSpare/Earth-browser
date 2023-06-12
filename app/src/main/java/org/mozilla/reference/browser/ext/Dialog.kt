@@ -19,7 +19,7 @@ fun Dialog.showEditTextDialog(
     }
 
     val dialog = AlertDialog.Builder(context)
-        .setTitle("Create a name for your file")
+        .setTitle("Create a name for this file")
         .setView(editText)
         .setPositiveButton(context.getString(R.string.download)) { _, _ ->
             val inputText = editText.text.toString().trim()
