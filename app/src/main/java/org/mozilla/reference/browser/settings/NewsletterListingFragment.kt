@@ -1,6 +1,7 @@
 package org.mozilla.reference.browser.settings
 
 import android.app.Activity
+import android.app.AlertDialog
 import android.app.Dialog
 import android.content.ContentResolver
 import android.content.Intent
@@ -71,27 +72,36 @@ class NewsletterListingFragment : Fragment(), NewsletterAdapter.NewsLetterClickL
             requireContext(),
             newsletter.title
         ) { name ->
-            try {
+            AlertDialog.Builder(requireContext())
+                .setTitle("Confirm")
+                .setMessage("Proceed to download ${name}.txt?")
+                .setPositiveButton("Yes") { _, _ ->
+                    try {
 
-                contentResolver = requireActivity().contentResolver
+                        contentResolver = requireActivity().contentResolver
 
-                val file = File(requireContext().getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS), "${name}.txt")
-                val fileOutputStream = FileOutputStream(file)
-                fileOutputStream.write(newsletter.content.toByteArray())
-                fileOutputStream.close()
+                        val file = File(requireContext().getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS), "${name}.txt")
+                        val fileOutputStream = FileOutputStream(file)
+                        fileOutputStream.write(newsletter.content.toByteArray(Charsets.UTF_8))
+                        fileOutputStream.close()
 
-                val intent = Intent(Intent.ACTION_CREATE_DOCUMENT).apply {
-                    addCategory(Intent.CATEGORY_OPENABLE)
-                    type = "text/plain"
-                    putExtra(Intent.EXTRA_TITLE, "${name}.txt")
+                        val intent = Intent(Intent.ACTION_CREATE_DOCUMENT).apply {
+                            addCategory(Intent.CATEGORY_OPENABLE)
+                            type = "text/plain"
+                            putExtra(Intent.EXTRA_TITLE, "${name}.txt")
+                        }
+
+                        startActivityForResult(intent, 10001)
+
+                    } catch (e: Exception) {
+                        Toast.makeText(requireContext(), e.message, Toast.LENGTH_SHORT).show()
+                        Log.d("PPPPPP", e.message.toString())
+                    }
                 }
+                .setNegativeButton("Cancel") { _, _ ->
 
-                startActivityForResult(intent, 10001)
-
-            } catch (e: Exception) {
-                Toast.makeText(requireContext(), e.message, Toast.LENGTH_SHORT).show()
-                Log.d("PPPPPP", e.message.toString())
-            }
+                }
+                .show()
         }
     }
 
