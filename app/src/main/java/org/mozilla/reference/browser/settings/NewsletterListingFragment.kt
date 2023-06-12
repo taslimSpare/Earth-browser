@@ -101,14 +101,15 @@ class NewsletterListingFragment : Fragment(), NewsletterAdapter.NewsLetterClickL
         if (requestCode == 10001 && resultCode == Activity.RESULT_OK) {
             data?.data?.let { destUri ->
 
-                val inputStream = contentResolver?.openInputStream(uri!!)
-                val outputStream = contentResolver?.openOutputStream(destUri)
-
-                inputStream?.use { input ->
-                    outputStream?.use { output ->
-                        input.copyTo(output)
-                    }
-                }
+                Toast.makeText(requireContext(), "Saved successfully", Toast.LENGTH_SHORT).show()
+//                val inputStream = contentResolver?.openInputStream(uri!!)
+//                val outputStream = contentResolver?.openOutputStream(destUri)
+//
+//                inputStream?.use { input ->
+//                    outputStream?.use { output ->
+//                        input.copyTo(output)
+//                    }
+//                }
             }
         }
     }
