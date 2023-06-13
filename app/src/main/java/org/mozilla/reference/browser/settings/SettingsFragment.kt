@@ -22,6 +22,7 @@ import androidx.preference.SwitchPreferenceCompat
 import mozilla.components.support.ktx.android.view.showKeyboard
 import org.mozilla.reference.browser.R
 import org.mozilla.reference.browser.R.string.pref_key_about_page
+import org.mozilla.reference.browser.R.string.pref_key_download_newsletters
 import org.mozilla.reference.browser.R.string.pref_key_firefox_account
 import org.mozilla.reference.browser.R.string.pref_key_make_default_browser
 import org.mozilla.reference.browser.R.string.pref_key_override_amo_collection
@@ -73,7 +74,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
         val privacyKey = requireContext().getPreferenceKey(pref_key_privacy)
         val customAddonsKey = requireContext().getPreferenceKey(pref_key_override_amo_collection)
         val autofillPreferenceKey = requireContext().getPreferenceKey(R.string.pref_key_autofill)
-        val newsletterDownloadKey = requireContext().getPreferenceKey(R.string.pref_key_download_newsletters)
+        val newsletterDownloadKey = requireContext().getPreferenceKey(pref_key_download_newsletters)
 
         val preferenceSignIn = findPreference<Preference>(signInKey)
         val preferencePairSignIn = findPreference<Preference>(signInPairKey)

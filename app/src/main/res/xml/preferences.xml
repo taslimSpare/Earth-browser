@@ -20,6 +20,7 @@
 
     <androidx.preference.Preference
         android:key="@string/pref_key_download_newsletters"
+        android:icon="@drawable/ic_new"
         android:summary="@string/preferences_download_newsletters_summary"
         android:title="@string/download_newsletters" />
 
