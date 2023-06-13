@@ -37,6 +37,10 @@ Here are a few Android specific technologies that were explored in this task
 6) File/FileInputStream/FileOutputStream
 7) ActivityResultContracts
 
+## Files changed
+
+To preview all files that were modified/changed, check out [this pull request](https://github.com/TaslimOseni/Earth-browser/pull/1).
+
 
 ## License
 
