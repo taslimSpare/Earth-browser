@@ -11,6 +11,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
@@ -89,7 +90,7 @@ class NewsletterListingFragment : Fragment(), NewsletterAdapter.NewsLetterClickL
                         putExtra(Intent.EXTRA_TITLE, "${newsletter.title}${getString(R.string.txt_extension)}")
                     }
 
-                    startActivityForResult(intent, 10001)
+                    fileDownloadLauncher.launch(intent)
 
                 } catch (e: Exception) {
                     Toast.makeText(requireContext(), e.message, Toast.LENGTH_SHORT).show()
@@ -100,10 +101,11 @@ class NewsletterListingFragment : Fragment(), NewsletterAdapter.NewsLetterClickL
             .show()
     }
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
+    private var fileDownloadLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+        if (result.resultCode == Activity.RESULT_OK) {
 
-        if (requestCode == 10001 && resultCode == Activity.RESULT_OK) {
+            val data: Intent? = result.data
+
             data?.data?.let { destUri ->
 
                 val inputStream = FileInputStream(file)
