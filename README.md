@@ -1,6 +1,6 @@
 #  Earth Browser
 
-A browser that allows users download monthly newsletters.
+A browser for the Earth! Explore our awesome monthly newsletters.
 
 # Steps to test
 
