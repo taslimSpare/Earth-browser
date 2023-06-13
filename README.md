@@ -6,6 +6,9 @@ A browser for the Earth! Explore our awesome monthly newsletters.
 
 You can install the APK directly using [this link](https://drive.google.com/drive/folders/1LQuCMpM7fiwFeebnMVHZ6b1wGTGCVaxa?usp=sharing).
 
+# Demo video
+
+If you would like to watch a demo video instead, click [this Google Drive](https://drive.google.com/file/d/11jlMpk6Xg1TQUk_xnU4fzLWmWSpHhCKm/view?usp=sharing) link.
 
 # Steps to test:
 
@@ -31,9 +34,6 @@ Here are a few Android specific technologies that were explored in this task
 5) Extension functions
 6) File/FileInputStream/FileOutputStream
 7) ActivityResultContracts
-
-
-See a [demo of this workflow](https://www.youtube.com/watch?v=qZKlBzVvQGc) in action.
 
 
 # License
