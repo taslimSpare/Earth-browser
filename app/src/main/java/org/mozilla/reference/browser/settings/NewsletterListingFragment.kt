@@ -20,7 +20,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.mozilla.reference.browser.R
 import org.mozilla.reference.browser.databinding.FragmentNewsletterListingBinding
-import org.mozilla.reference.browser.testdata.fetchTestNewsletters
+import org.mozilla.reference.browser.testdata.testNewsletters
 import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
@@ -51,7 +51,7 @@ class NewsletterListingFragment : Fragment(), NewsletterAdapter.NewsLetterClickL
         val newsletterAdapter = NewsletterAdapter()
 
         // Populate adapter and set click listener
-        newsletterAdapter.submitList(fetchTestNewsletters())
+        newsletterAdapter.submitList(testNewsletters)
         newsletterAdapter.newsLetterClickListener = this
 
         // Set adapter value
