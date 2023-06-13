@@ -15,7 +15,7 @@ To test the Reference Browser based on required specifications, follow these ste
 7) On the dialog that pops up, click on Yes to open the Downloads folder
 
 
-See a [demo of this workflow](https://www.youtube.com/watch?v=qZKlBzVvQGc) in action. Video mentions `Fenix`, but it works in exactly the same with with `reference-browser`.
+See a [demo of this workflow](https://www.youtube.com/watch?v=qZKlBzVvQGc) in action.
 
 
 # License
