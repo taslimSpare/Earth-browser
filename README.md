@@ -2,14 +2,18 @@
 
 A browser for the Earth! Explore our awesome monthly newsletters.
 
+
+
 ## Test APK:
 
 You can install the APK directly using [this link](https://drive.google.com/drive/folders/1LQuCMpM7fiwFeebnMVHZ6b1wGTGCVaxa?usp=sharing).
 
 
+
 ## Demo video
 
 If you would like to watch a demo video instead, click [this Google Drive](https://drive.google.com/file/d/11jlMpk6Xg1TQUk_xnU4fzLWmWSpHhCKm/view?usp=sharing) link.
+
 
 
 ## Steps to test:
@@ -25,6 +29,7 @@ To test the Reference Browser based on required specifications, follow these ste
 7) On the dialog that pops up, click on Yes to open the Downloads folder
 
 
+
 ## Technologies explored:
 
 Here are a few Android specific technologies that were explored in this task
@@ -36,6 +41,8 @@ Here are a few Android specific technologies that were explored in this task
 5) Extension functions
 6) File/FileInputStream/FileOutputStream
 7) ActivityResultContracts
+
+
 
 ## Files changed
 
