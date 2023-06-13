@@ -155,7 +155,6 @@
 <p>Private Browsing <strong>doesn\'t make you anonymous</strong> on the Internet. Your employer or Internet service provider can still know what page you visit.</p>
 <p class="about-info">Learn more about <a id="learnMore">Private Browsing</a>.</p>
      ]]></string>
-
     <!-- Title of the notification shown on app startup informing about the data policy -->
     <string name="datareporting_notification_title">Earth Browser</string>
 
@@ -177,7 +176,6 @@
 
     <string name="menu_share_with">Share with…</string>
     <string name="toast_copied">Copied!</string>
-    <string name="download">Download</string>
 
     <!-- Send Tab -->
     <!-- Name of the "receive tabs" notification channel. Displayed in the "App notifications" system settings for the app -->
@@ -208,6 +206,7 @@
     <string name="customize_addon_collection_user_hint">Collection owner (User ID)</string>
     <!-- Toast shown after confirming the custom add-on collection configuration -->
     <string name="toast_customize_addon_collection_done">Add-on collection modified. Quitting the application to apply changes…</string>
+
     <string name="click_indicator">Action indicator</string>
     <string name="newsletter_loading_text">Fetching latest newsletters…</string>
 </resources>
