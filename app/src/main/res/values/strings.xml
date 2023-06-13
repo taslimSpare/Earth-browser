@@ -212,10 +212,11 @@
     <string name="newsletter_loading_text">Fetching latest newsletters…</string>
 
     <string name="confirm">Confirm</string>
+    <string name="no">No</string>
     <string name="cancel">Cancel</string>
     <string name="proceed_to_download">Proceed to download %s.txt? You can edit the name in the next screen</string>
     <string name="download_successful">Download Successful</string>
-    <string name="open_downloads_folder">Launch downloads folder?</string>
+    <string name="open_downloads_folder">Do you want to open your downloads folder?</string>
     <string name="navigate_to_downloads_later">You can view the file anytime in your downloads</string>
 
     <string name="txt_extension">%s.txt</string>

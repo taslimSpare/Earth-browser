@@ -131,7 +131,7 @@ class NewsletterListingFragment : Fragment(), NewsletterAdapter.NewsLetterClickL
                     .setPositiveButton(getString(R.string.yes)) { _, _ ->
                         startActivity(Intent(DownloadManager.ACTION_VIEW_DOWNLOADS))
                     }
-                    .setNegativeButton(getString(R.string.cancel)) { _, _ ->
+                    .setNegativeButton(getString(R.string.no)) { _, _ ->
                         Toast.makeText(requireContext(), getString(R.string.navigate_to_downloads_later), Toast.LENGTH_SHORT).show()
                     }
                     .show()

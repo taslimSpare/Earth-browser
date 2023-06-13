@@ -7,10 +7,10 @@ A browser for the Earth! Explore our awesome monthly newsletters.
 To test the Reference Browser based on required specifications, follow these steps:
 
 1) Launch the app
-2) Navigate to settings
-3) Click on "Download newsletters"
+2) Click on the menu icon and navigate to settings
+3) From the list, choose "Download newsletters"
 4) Select the newsletter you want to download
-5) Accept the confirmation dialog that pops up by clicking "Yes"
+5) Accept the download-confirmation dialog that pops up by clicking "Yes"
 6) Enter the name you want to save your file with, then click "Save"
 7) On the dialog that pops up, click on Yes to open the Downloads folder
 
