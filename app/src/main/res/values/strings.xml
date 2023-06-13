@@ -19,7 +19,7 @@
     <string name="preferences_sign_in_summary">Sync your tabs and history</string>
 
     <!-- Preference summary for downloading newsletters -->
-    <string name="preferences_download_newsletters">Read our richly curated weekly messages</string>
+    <string name="preferences_download_newsletters_summary">Read our monthly Earth messages</string>
 
     <!-- Preference summary for pairing sign in -->
     <string name="preferences_pair_sign_in_summary">Pair with Firefox Desktop</string>

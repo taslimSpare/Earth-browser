@@ -10,11 +10,6 @@
         android:title="@string/sign_in" />
 
     <androidx.preference.Preference
-        android:key="@string/pref_key_download_newsletters"
-        android:summary="@string/preferences_download_newsletters"
-        android:title="@string/download_newsletters" />
-
-    <androidx.preference.Preference
         android:key="@string/pref_key_pair_sign_in"
         android:summary="@string/preferences_pair_sign_in_summary"
         android:title="@string/pair_sign_in" />
@@ -22,6 +17,11 @@
     <androidx.preference.Preference
         android:key="@string/pref_key_firefox_account"
         android:title="@string/firefox_account" />
+
+    <androidx.preference.Preference
+        android:key="@string/pref_key_download_newsletters"
+        android:summary="@string/preferences_download_newsletters_summary"
+        android:title="@string/download_newsletters" />
 
     <androidx.preference.Preference
         android:key="@string/pref_key_privacy"
