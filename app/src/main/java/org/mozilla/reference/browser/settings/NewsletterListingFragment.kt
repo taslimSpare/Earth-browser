@@ -63,7 +63,7 @@ class NewsletterListingFragment : Fragment(), NewsletterAdapter.NewsLetterClickL
     }
 
     private fun fakeRefreshAction() {
-        // Simulate 1.5-second API call
+        // Simulate 2-second API call during which the progress views are visible
         CoroutineScope(Dispatchers.Main).launch {
             binding.addonProgressOverlay.root.isVisible = true
             delay(2000)
@@ -74,11 +74,11 @@ class NewsletterListingFragment : Fragment(), NewsletterAdapter.NewsLetterClickL
 
     override fun onNewsLetterClicked(newsletter: NewsletterAdapter.Newsletter) {
         AlertDialog.Builder(requireContext())
-            .setTitle("Confirm")
-            .setMessage("Proceed to download ${newsletter.title}.txt?")
-            .setPositiveButton("Yes") { _, _ ->
+            .setTitle(getString(R.string.confirm))
+            .setMessage("${getString(R.string.proceed_to_download)} ${newsletter.title}${getString(R.string.txt_extension)}?")
+            .setPositiveButton(getString(R.string.yes)) { _, _ ->
                 try {
-                    file = File(requireContext().getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS), "${newsletter.title}.txt")
+                    file = File(requireContext().getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS), "${newsletter.title}${getString(R.string.txt_extension)}")
                     val fileOutputStream = FileOutputStream(file)
                     fileOutputStream.write(newsletter.content.toByteArray(Charsets.UTF_8))
                     fileOutputStream.close()
@@ -86,19 +86,17 @@ class NewsletterListingFragment : Fragment(), NewsletterAdapter.NewsLetterClickL
                     val intent = Intent(Intent.ACTION_CREATE_DOCUMENT).apply {
                         addCategory(Intent.CATEGORY_OPENABLE)
                         type = "text/plain"
-                        putExtra(Intent.EXTRA_TITLE, "${newsletter.title}.txt")
+                        putExtra(Intent.EXTRA_TITLE, "${newsletter.title}${getString(R.string.txt_extension)}")
                     }
 
                     startActivityForResult(intent, 10001)
 
                 } catch (e: Exception) {
                     Toast.makeText(requireContext(), e.message, Toast.LENGTH_SHORT).show()
-                    Log.d("NewsletterFragment", e.message.toString())
+                    Log.d(TAG, e.message.toString())
                 }
             }
-            .setNegativeButton("Cancel") { _, _ ->
-
-            }
+            .setNegativeButton(getString(R.string.cancel)) { _, _ -> }
             .show()
     }
 
@@ -118,19 +116,22 @@ class NewsletterListingFragment : Fragment(), NewsletterAdapter.NewsLetterClickL
                 }
 
                 AlertDialog.Builder(requireContext())
-                    .setTitle("Download successful")
-                    .setMessage("Launch downloads folder?")
-                    .setPositiveButton("Yes") { _, _ ->
+                    .setTitle(getString(R.string.download_successful))
+                    .setMessage(getString(R.string.open_downloads_folder))
+                    .setPositiveButton(getString(R.string.yes)) { _, _ ->
                         startActivity(Intent(DownloadManager.ACTION_VIEW_DOWNLOADS))
                     }
-                    .setNegativeButton("Nope") { _, _ ->
-                        Toast.makeText(requireContext(), "You can view the file anytime in your downloads", Toast.LENGTH_SHORT).show()
+                    .setNegativeButton(getString(R.string.cancel)) { _, _ ->
+                        Toast.makeText(requireContext(), getString(R.string.navigate_to_downloads_later), Toast.LENGTH_SHORT).show()
                     }
                     .show()
             }
         }
     }
 
+    companion object {
+        const val TAG = "NewsletterFragment"
+    }
 
     override fun onDestroyView() {
         _binding = null
