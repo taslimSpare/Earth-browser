@@ -12,7 +12,12 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import org.mozilla.reference.browser.R
 import org.mozilla.reference.browser.databinding.FragmentNewsletterListingBinding
 import java.io.File
@@ -35,6 +40,13 @@ class NewsletterListingFragment : Fragment(), NewsletterAdapter.NewsLetterClickL
         super.onViewCreated(view, savedInstanceState)
 
         (activity as AppCompatActivity).title = getString(R.string.preferences_newsletters_page)
+
+        // Simulate 1.5-second API call
+        viewLifecycleOwner.lifecycleScope.launch(Dispatchers.Main) {
+            binding.addonProgressOverlay.root.isVisible = true
+            delay(1500)
+            binding.addonProgressOverlay.root.isVisible = false
+        }
 
         val newsletterAdapter = NewsletterAdapter()
         newsletterAdapter.newsLetterClickListener = this
