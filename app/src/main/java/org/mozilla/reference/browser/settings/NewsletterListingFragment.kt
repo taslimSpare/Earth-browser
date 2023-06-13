@@ -14,7 +14,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.lifecycleScope
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -42,15 +42,13 @@ class NewsletterListingFragment : Fragment(), NewsletterAdapter.NewsLetterClickL
 
         (activity as AppCompatActivity).title = getString(R.string.preferences_newsletters_page)
 
+        binding.newsletterRefresh.post {
+            binding.newsletterRefresh.isRefreshing = true
+            fakeRefreshAction()
+        }
+
         // Create adapter object
         val newsletterAdapter = NewsletterAdapter()
-
-        // Simulate 1.5-second API call
-        viewLifecycleOwner.lifecycleScope.launch(Dispatchers.Main) {
-            binding.addonProgressOverlay.root.isVisible = true
-            delay(1500)
-            binding.addonProgressOverlay.root.isVisible = false
-        }
 
         // Populate adapter and set click listener
         newsletterAdapter.submitList(fetchTestNewsletters())
@@ -58,6 +56,20 @@ class NewsletterListingFragment : Fragment(), NewsletterAdapter.NewsLetterClickL
 
         // Set adapter value
         binding.newsletterRecycler.adapter = newsletterAdapter
+
+        binding.newsletterRefresh.setOnRefreshListener {
+            fakeRefreshAction()
+        }
+    }
+
+    private fun fakeRefreshAction() {
+        // Simulate 1.5-second API call
+        CoroutineScope(Dispatchers.Main).launch {
+            binding.addonProgressOverlay.root.isVisible = true
+            delay(2000)
+            binding.addonProgressOverlay.root.isVisible = false
+            binding.newsletterRefresh.isRefreshing = false
+        }
     }
 
     override fun onNewsLetterClicked(newsletter: NewsletterAdapter.Newsletter) {
@@ -72,7 +84,7 @@ class NewsletterListingFragment : Fragment(), NewsletterAdapter.NewsLetterClickL
                     fileOutputStream.close()
 
                     val intent = Intent(Intent.ACTION_CREATE_DOCUMENT).apply {
-//                            addCategory(Intent.CATEGORY_OPENABLE)
+                        addCategory(Intent.CATEGORY_OPENABLE)
                         type = "text/plain"
                         putExtra(Intent.EXTRA_TITLE, "${newsletter.title}.txt")
                     }

@@ -20,5 +20,12 @@
         android:drawablePadding="8dp"
         android:text="@string/newsletter_loading_text"/>
 
+    <ProgressBar
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:indeterminateTint="@color/photonWhite"
+        android:layout_marginEnd="16dp"
+        android:layout_gravity="center|end"/>
+
 </androidx.cardview.widget.CardView>
 
