@@ -2,7 +2,6 @@ package org.mozilla.reference.browser.settings
 
 import android.app.Activity
 import android.app.AlertDialog
-import android.app.Dialog
 import android.app.DownloadManager
 import android.content.Intent
 import android.os.Bundle
@@ -16,7 +15,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import org.mozilla.reference.browser.R
 import org.mozilla.reference.browser.databinding.FragmentNewsletterListingBinding
-import org.mozilla.reference.browser.ext.showEditTextDialog
 import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
@@ -66,39 +64,33 @@ class NewsletterListingFragment : Fragment(), NewsletterAdapter.NewsLetterClickL
     }
 
     override fun onNewsLetterClicked(newsletter: NewsletterAdapter.Newsletter) {
-        val nameDialog = Dialog(requireContext())
-        nameDialog.showEditTextDialog(
-            requireContext(),
-            newsletter.title
-        ) { name ->
-            AlertDialog.Builder(requireContext())
-                .setTitle("Confirm")
-                .setMessage("Proceed to download ${name}.txt?")
-                .setPositiveButton("Yes") { _, _ ->
-                    try {
-                        file = File(requireContext().getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS), "${name}.txt")
-                        val fileOutputStream = FileOutputStream(file)
-                        fileOutputStream.write(newsletter.content.toByteArray(Charsets.UTF_8))
-                        fileOutputStream.close()
+        AlertDialog.Builder(requireContext())
+            .setTitle("Confirm")
+            .setMessage("Proceed to download ${newsletter.title}.txt?")
+            .setPositiveButton("Yes") { _, _ ->
+                try {
+                    file = File(requireContext().getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS), "${newsletter.title}.txt")
+                    val fileOutputStream = FileOutputStream(file)
+                    fileOutputStream.write(newsletter.content.toByteArray(Charsets.UTF_8))
+                    fileOutputStream.close()
 
-                        val intent = Intent(Intent.ACTION_CREATE_DOCUMENT).apply {
-                            addCategory(Intent.CATEGORY_OPENABLE)
-                            type = "text/plain"
-                            putExtra(Intent.EXTRA_TITLE, "${name}.txt")
-                        }
-
-                        startActivityForResult(intent, 10001)
-
-                    } catch (e: Exception) {
-                        Toast.makeText(requireContext(), e.message, Toast.LENGTH_SHORT).show()
-                        Log.d("PPPPPP", e.message.toString())
+                    val intent = Intent(Intent.ACTION_CREATE_DOCUMENT).apply {
+//                            addCategory(Intent.CATEGORY_OPENABLE)
+                        type = "text/plain"
+                        putExtra(Intent.EXTRA_TITLE, "${newsletter.title}.txt")
                     }
-                }
-                .setNegativeButton("Cancel") { _, _ ->
 
+                    startActivityForResult(intent, 10001)
+
+                } catch (e: Exception) {
+                    Toast.makeText(requireContext(), e.message, Toast.LENGTH_SHORT).show()
+                    Log.d("NewsletterFragment", e.message.toString())
                 }
-                .show()
-        }
+            }
+            .setNegativeButton("Cancel") { _, _ ->
+
+            }
+            .show()
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
