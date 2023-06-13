@@ -115,9 +115,8 @@ class NewsletterListingFragment : Fragment(), NewsletterAdapter.NewsLetterClickL
             result.data?.data?.let { destUri ->
 
                 // Write to the file
-
                 val inputStream = FileInputStream(file)
-                val outputStream = requireActivity().contentResolver?.openOutputStream(destUri)
+                val outputStream = activity?.contentResolver?.openOutputStream(destUri)
 
                 inputStream.use { input ->
                     outputStream?.use { output ->
@@ -126,7 +125,6 @@ class NewsletterListingFragment : Fragment(), NewsletterAdapter.NewsLetterClickL
                 }
 
                 // Nudge user with an option to open the Downloads folder
-
                 AlertDialog.Builder(requireContext())
                     .setTitle(getString(R.string.download_successful))
                     .setMessage(getString(R.string.open_downloads_folder))
