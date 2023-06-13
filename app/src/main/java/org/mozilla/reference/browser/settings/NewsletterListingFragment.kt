@@ -74,22 +74,30 @@ class NewsletterListingFragment : Fragment(), NewsletterAdapter.NewsLetterClickL
     }
 
     override fun onNewsLetterClicked(newsletter: NewsletterAdapter.Newsletter) {
+
+        // Confirm download
         AlertDialog.Builder(requireContext())
             .setTitle(getString(R.string.confirm))
-            .setMessage("${getString(R.string.proceed_to_download)} ${newsletter.title}${getString(R.string.txt_extension)}?")
+            .setMessage(getString(R.string.proceed_to_download, newsletter.title))
             .setPositiveButton(getString(R.string.yes)) { _, _ ->
                 try {
-                    file = File(requireContext().getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS), "${newsletter.title}${getString(R.string.txt_extension)}")
+
+                    // Create a file in the Downloads directory
+                    file = File(requireContext().getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS), getString(R.string.txt_extension, newsletter.title))
+
+                    // Write the content to the file
                     val fileOutputStream = FileOutputStream(file)
                     fileOutputStream.write(newsletter.content.toByteArray(Charsets.UTF_8))
                     fileOutputStream.close()
 
+                    // Create an intent to navigate to the Downloads folder
                     val intent = Intent(Intent.ACTION_CREATE_DOCUMENT).apply {
                         addCategory(Intent.CATEGORY_OPENABLE)
                         type = "text/plain"
-                        putExtra(Intent.EXTRA_TITLE, "${newsletter.title}${getString(R.string.txt_extension)}")
+                        putExtra(Intent.EXTRA_TITLE, getString(R.string.txt_extension, newsletter.title))
                     }
 
+                    // Launch the intent
                     fileDownloadLauncher.launch(intent)
 
                 } catch (e: Exception) {
@@ -104,9 +112,9 @@ class NewsletterListingFragment : Fragment(), NewsletterAdapter.NewsLetterClickL
     private var fileDownloadLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
         if (result.resultCode == Activity.RESULT_OK) {
 
-            val data: Intent? = result.data
+            result.data?.data?.let { destUri ->
 
-            data?.data?.let { destUri ->
+                // Write to the file
 
                 val inputStream = FileInputStream(file)
                 val outputStream = requireActivity().contentResolver?.openOutputStream(destUri)
@@ -116,6 +124,8 @@ class NewsletterListingFragment : Fragment(), NewsletterAdapter.NewsLetterClickL
                         input.copyTo(output)
                     }
                 }
+
+                // Nudge user with an option to open the Downloads folder
 
                 AlertDialog.Builder(requireContext())
                     .setTitle(getString(R.string.download_successful))

@@ -213,12 +213,12 @@
 
     <string name="confirm">Confirm</string>
     <string name="cancel">Cancel</string>
-    <string name="proceed_to_download">Proceed to download</string>
+    <string name="proceed_to_download">Proceed to download %s.txt? You can edit the name in the next screen</string>
     <string name="download_successful">Download Successful</string>
     <string name="open_downloads_folder">Launch downloads folder?</string>
     <string name="navigate_to_downloads_later">You can view the file anytime in your downloads</string>
 
-    <string name="txt_extension">.txt</string>
+    <string name="txt_extension">%s.txt</string>
 
     <string name="yes">Yes</string>
 
