@@ -2,7 +2,12 @@
 
 A browser for the Earth! Explore our awesome monthly newsletters.
 
-# Steps to test
+# Test APK:
+
+You can install the APK directly using [this link](https://drive.google.com/drive/folders/1LQuCMpM7fiwFeebnMVHZ6b1wGTGCVaxa?usp=sharing).
+
+
+# Steps to test:
 
 To test the Reference Browser based on required specifications, follow these steps:
 
@@ -13,6 +18,18 @@ To test the Reference Browser based on required specifications, follow these ste
 5) Accept the download-confirmation dialog that pops up by clicking "Yes"
 6) Enter the name you want to save your file with, then click "Save"
 7) On the dialog that pops up, click on Yes to open the Downloads folder
+
+
+# Technologies explored:
+
+Here are a few Android specific technologies that were explored in this task
+
+1) ViewBinding
+2) Kotlin Coroutines
+3) Preference library
+4) ListAdapters
+5) File/FileInputStream/FileOutputStream
+6) ActivityResultContracts
 
 
 See a [demo of this workflow](https://www.youtube.com/watch?v=qZKlBzVvQGc) in action.
