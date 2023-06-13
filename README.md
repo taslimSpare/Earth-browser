@@ -28,8 +28,9 @@ Here are a few Android specific technologies that were explored in this task
 2) Kotlin Coroutines
 3) Preference library
 4) ListAdapters
-5) File/FileInputStream/FileOutputStream
-6) ActivityResultContracts
+5) Extension functions
+6) File/FileInputStream/FileOutputStream
+7) ActivityResultContracts
 
 
 See a [demo of this workflow](https://www.youtube.com/watch?v=qZKlBzVvQGc) in action.

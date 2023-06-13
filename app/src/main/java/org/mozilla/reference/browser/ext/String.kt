@@ -14,3 +14,31 @@ fun String.replace(pairs: Map<String, String>): String {
     pairs.forEach { (l, r) -> result = result.replace(l, r) }
     return result
 }
+
+// This extension function wraps the string in a way that is readable on a txt file
+fun String.wrapForTxt(): String {
+    val lineWidth = 40 // This line width should prevent text overlap
+    val wrappedContent = StringBuilder()
+    var startIndex = 0
+    var endIndex = 40 // Initialized as the same as line width
+
+    while (startIndex < length) {
+        if (endIndex >= length) {
+            endIndex = length
+        } else {
+            while (endIndex > startIndex && !Character.isWhitespace(this[endIndex])) {
+                endIndex--
+            }
+        }
+
+        if (endIndex <= startIndex) {
+            endIndex = startIndex + lineWidth
+        }
+
+        wrappedContent.append(substring(startIndex, endIndex)).append(System.lineSeparator())
+        startIndex = endIndex
+        endIndex += lineWidth
+    }
+
+    return wrappedContent.toString()
+}

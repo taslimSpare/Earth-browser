@@ -21,6 +21,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.mozilla.reference.browser.R
 import org.mozilla.reference.browser.databinding.FragmentNewsletterListingBinding
+import org.mozilla.reference.browser.ext.wrapForTxt
 import org.mozilla.reference.browser.testdata.testNewsletters
 import java.io.File
 import java.io.FileInputStream
@@ -87,7 +88,7 @@ class NewsletterListingFragment : Fragment(), NewsletterAdapter.NewsLetterClickL
 
                     // Write the content to the file
                     val fileOutputStream = FileOutputStream(file)
-                    fileOutputStream.write(newsletter.content.toByteArray(Charsets.UTF_8))
+                    fileOutputStream.write(newsletter.content.wrapForTxt().toByteArray(Charsets.UTF_8))
                     fileOutputStream.close()
 
                     // Create an intent to navigate to the Downloads folder
