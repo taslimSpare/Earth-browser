@@ -18,7 +18,7 @@ fun String.replace(pairs: Map<String, String>): String {
 // This extension function wraps the string in a way that is readable on a txt file
 fun String.wrapForTxt(): String {
     val lineWidth = 40 // This line width should prevent text overlap
-    val wrappedContent = StringBuilder()
+    val result = StringBuilder()
     var startIndex = 0
     var endIndex = 40 // Initialized as the same as line width
 
@@ -35,10 +35,11 @@ fun String.wrapForTxt(): String {
             endIndex = startIndex + lineWidth
         }
 
-        wrappedContent.append(substring(startIndex, endIndex)).append(System.lineSeparator())
+        result.append(substring(startIndex, endIndex)).append(System.lineSeparator())
+
         startIndex = endIndex
         endIndex += lineWidth
     }
 
-    return wrappedContent.toString()
+    return result.toString()
 }
