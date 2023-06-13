@@ -2,15 +2,17 @@
 
 A browser for the Earth! Explore our awesome monthly newsletters.
 
-# Test APK:
+## Test APK:
 
 You can install the APK directly using [this link](https://drive.google.com/drive/folders/1LQuCMpM7fiwFeebnMVHZ6b1wGTGCVaxa?usp=sharing).
 
-# Demo video
+
+## Demo video
 
 If you would like to watch a demo video instead, click [this Google Drive](https://drive.google.com/file/d/11jlMpk6Xg1TQUk_xnU4fzLWmWSpHhCKm/view?usp=sharing) link.
 
-# Steps to test:
+
+## Steps to test:
 
 To test the Reference Browser based on required specifications, follow these steps:
 
@@ -23,7 +25,7 @@ To test the Reference Browser based on required specifications, follow these ste
 7) On the dialog that pops up, click on Yes to open the Downloads folder
 
 
-# Technologies explored:
+## Technologies explored:
 
 Here are a few Android specific technologies that were explored in this task
 
@@ -36,7 +38,7 @@ Here are a few Android specific technologies that were explored in this task
 7) ActivityResultContracts
 
 
-# License
+## License
 
     This Source Code Form is subject to the terms of the Mozilla Public
     License, v. 2.0. If a copy of the MPL was not distributed with this
