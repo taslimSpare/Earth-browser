@@ -3,7 +3,9 @@ package org.mozilla.reference.browser.settings
 import android.app.Activity
 import android.app.AlertDialog
 import android.app.DownloadManager
+import android.content.Context
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.os.Environment
 import android.util.Log
@@ -19,6 +21,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import org.mozilla.geckoview.GeckoSession
 import org.mozilla.reference.browser.R
 import org.mozilla.reference.browser.databinding.FragmentNewsletterListingBinding
 import org.mozilla.reference.browser.ext.wrapForTxt
@@ -32,6 +35,8 @@ class NewsletterListingFragment : Fragment(), NewsletterAdapter.NewsLetterClickL
     private var _binding: FragmentNewsletterListingBinding? = null
     private val binding get() = _binding!!
     var file: File? = null
+
+    private lateinit var geckoSession: GeckoSession
 
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
@@ -83,23 +88,36 @@ class NewsletterListingFragment : Fragment(), NewsletterAdapter.NewsLetterClickL
             .setPositiveButton(getString(R.string.yes)) { _, _ ->
                 try {
 
-                    // Create a file in the Downloads directory
-                    file = File(requireContext().getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS), getString(R.string.txt_extension, newsletter.title))
+                    // check if url is null
 
-                    // Write the content to the file
-                    val fileOutputStream = FileOutputStream(file)
-                    fileOutputStream.write(newsletter.content.wrapForTxt().toByteArray(Charsets.UTF_8))
-                    fileOutputStream.close()
+                    if (newsletter.url != null) {
+                        val request = DownloadManager.Request(Uri.parse(newsletter.url))
+                        request.setTitle(newsletter.title)
+                        request.setDescription("Downloading ${getString(R.string.txt_extension, newsletter.title)}")
+                        request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
+                        request.setDestinationInExternalFilesDir(requireContext(), Environment.DIRECTORY_DOWNLOADS, getString(R.string.txt_extension, newsletter.title))
 
-                    // Create an intent to navigate to the Downloads folder
-                    val intent = Intent(Intent.ACTION_CREATE_DOCUMENT).apply {
-                        addCategory(Intent.CATEGORY_OPENABLE)
-                        type = "text/plain"
-                        putExtra(Intent.EXTRA_TITLE, getString(R.string.txt_extension, newsletter.title))
+                        val manager = requireContext().getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager
+                        manager.enqueue(request)
+                    } else {
+                        // Create a file in the Downloads directory
+                        file = File(requireContext().getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS), getString(R.string.txt_extension, newsletter.title))
+
+                        // Write the content to the file
+                        val fileOutputStream = FileOutputStream(file)
+                        fileOutputStream.write(newsletter.content.wrapForTxt().toByteArray(Charsets.UTF_8))
+                        fileOutputStream.close()
+
+                        // Create an intent to navigate to the Downloads folder
+                        val intent = Intent(Intent.ACTION_CREATE_DOCUMENT).apply {
+                            addCategory(Intent.CATEGORY_OPENABLE)
+                            type = "text/plain"
+                            putExtra(Intent.EXTRA_TITLE, getString(R.string.txt_extension, newsletter.title))
+                        }
+
+                        // Launch the intent
+                        fileDownloadLauncher.launch(intent)
                     }
-
-                    // Launch the intent
-                    fileDownloadLauncher.launch(intent)
 
                 } catch (e: Exception) {
                     Toast.makeText(requireContext(), e.message, Toast.LENGTH_SHORT).show()
