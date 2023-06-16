@@ -28,6 +28,9 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.mozilla.reference.browser.R
 import org.mozilla.reference.browser.databinding.FragmentNewsletterListingBinding
+import org.mozilla.reference.browser.ext.showAlertDialog
+import org.mozilla.reference.browser.ext.showEditTextDialogForFileName
+import org.mozilla.reference.browser.ext.showToast
 import org.mozilla.reference.browser.ext.wrapForTxt
 import org.mozilla.reference.browser.testdata.testNewsletters
 import java.io.File
@@ -92,98 +95,127 @@ class NewsletterListingFragment : Fragment(), NewsletterAdapter.NewsLetterClickL
     @SuppressLint("Range")
     override fun onNewsLetterClicked(newsletter: NewsletterAdapter.Newsletter) {
 
-        // Confirm download
-        AlertDialog.Builder(requireContext())
-            .setTitle(getString(R.string.confirm))
-            .setMessage(getString(R.string.proceed_to_download, newsletter.title))
-            .setPositiveButton(getString(R.string.yes)) { _, _ ->
-                try {
+        // Show prompt for the user to enter their preferred file name
 
-                    // check if url is null
-                    if (newsletter.url != null) {
-
-                        // Use a handler to update progress bar on the main thread
-                        mainHandler = Handler(Looper.getMainLooper()) { msg ->
-                            // Indicate that we would like to update download progress
-                            if (msg.what == 1) {
-                                val downloadProgress: Int = msg.arg1
-
-                                // Update your progress bar here.
-                                Log.d(TAG, downloadProgress.toString())
-                            }
-                            true
-                        }
-
-                        val request = DownloadManager.Request(Uri.parse(newsletter.url))
-                        request.setTitle(newsletter.title)
-                        request.setDescription("Downloading ${getString(R.string.txt_extension, newsletter.title)}")
-                        request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
-                        request.setDestinationInExternalFilesDir(requireContext(), Environment.DIRECTORY_DOWNLOADS, getString(R.string.txt_extension, newsletter.title))
-
-                        val manager = requireContext().getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager
-                        val downloadId = manager.enqueue(request)
-
-                        // Run a task in a background thread to check download progress
-                        executor.execute {
-                            var progress = 0
-                            var isDownloadFinished = false
-                            while (!isDownloadFinished) {
-                                val cursor: Cursor = manager.query(DownloadManager.Query().setFilterById(downloadId))
-                                if (cursor.moveToFirst()) {
-                                    when (cursor.getInt(cursor.getColumnIndex(DownloadManager.COLUMN_STATUS))) {
-                                        DownloadManager.STATUS_RUNNING -> {
-                                            val totalBytes = cursor.getLong(cursor.getColumnIndex(DownloadManager.COLUMN_TOTAL_SIZE_BYTES))
-                                            if (totalBytes > 0) {
-                                                val downloadedBytes = cursor.getLong(cursor.getColumnIndex(DownloadManager.COLUMN_BYTES_DOWNLOADED_SO_FAR))
-                                                progress = (downloadedBytes * 100 / totalBytes).toInt()
-                                            }
-                                        }
-
-                                        DownloadManager.STATUS_SUCCESSFUL -> {
-                                            progress = 100
-                                            isDownloadFinished = true
-                                        }
-
-                                        DownloadManager.STATUS_PAUSED, DownloadManager.STATUS_PENDING -> {}
-                                        DownloadManager.STATUS_FAILED -> isDownloadFinished = true
-                                    }
-                                    val message = Message.obtain()
-                                    message.what = 1
-                                    message.arg1 = progress
-                                    mainHandler?.sendMessage(message)
-                                }
-                            }
-                        }
-                    } else {
-                        // Create a file in the Downloads directory
-                        file = File(requireContext().getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS), getString(R.string.txt_extension, newsletter.title))
-
-                        // Write the content to the file
-                        val fileOutputStream = FileOutputStream(file)
-                        fileOutputStream.write(newsletter.content.wrapForTxt().toByteArray(Charsets.UTF_8))
-                        fileOutputStream.close()
-
-                        // Create an intent to navigate to the Downloads folder
-                        val intent = Intent(Intent.ACTION_CREATE_DOCUMENT).apply {
-                            addCategory(Intent.CATEGORY_OPENABLE)
-                            type = "text/plain"
-                            putExtra(Intent.EXTRA_TITLE, getString(R.string.txt_extension, newsletter.title))
-                        }
-
-                        // Launch the intent
-                        fileDownloadLauncher.launch(intent)
-                    }
-
-                } catch (e: Exception) {
-                    Toast.makeText(requireContext(), e.message, Toast.LENGTH_SHORT).show()
-                    Log.d(TAG, e.message.toString())
-                }
+        requireContext().showEditTextDialogForFileName(
+            title = getString(R.string.enter_file_name),
+            defaultText = getString(R.string.txt_extension, newsletter.title)
+        ) { fileName ->
+            when {
+                fileName.isEmpty() -> requireContext().showToast(getString(R.string.empty_file_name))
+                !fileName.endsWith(getString(R.string.dot_txt)) -> requireContext().showToast(getString(R.string.file_name_no_txt))
+                else -> confirmDownload(fileName, newsletter)
             }
-            .setNegativeButton(getString(R.string.cancel)) { _, _ -> }
-            .show()
+        }
     }
 
-    private var fileDownloadLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+    private fun confirmDownload(fileName: String, newsletter: NewsletterAdapter.Newsletter) {
+
+        // Display confirmation dialog for download
+
+        requireContext().showAlertDialog(
+            title = getString(R.string.confirm),
+            message = getString(R.string.proceed_to_download, fileName),
+            callback = {
+                if (newsletter.url.isNullOrEmpty()) {
+                    downloadLocalFile(fileName, newsletter)
+                } else {
+                    initRemoteDownload(fileName, newsletter)
+                }
+            }
+        )
+    }
+
+    private fun downloadLocalFile(fileName: String, newsletter: NewsletterAdapter.Newsletter) {
+        try {
+            // Create a file in the Downloads directory
+            file = File(requireContext().getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS), fileName)
+
+            // Write the content to the file
+            val fileOutputStream = FileOutputStream(file)
+            fileOutputStream.write(newsletter.content.wrapForTxt().toByteArray(Charsets.UTF_8))
+            fileOutputStream.close()
+
+            // Create an intent to navigate to the Downloads folder
+            val intent = Intent(Intent.ACTION_CREATE_DOCUMENT).apply {
+                addCategory(Intent.CATEGORY_OPENABLE)
+                type = "text/plain"
+                putExtra(Intent.EXTRA_TITLE, fileName)
+            }
+
+            // Launch the intent
+            localFileDownloadLauncher.launch(intent)
+
+        } catch (e: Exception) {
+            requireContext().showToast(e.message.toString())
+            Log.d(TAG, e.message.toString())
+        }
+    }
+
+    private fun initRemoteDownload(fileName: String, newsletter: NewsletterAdapter.Newsletter) {
+
+        // Use a handler to update progress bar on the main thread
+        mainHandler = Handler(Looper.getMainLooper()) { msg ->
+            // Indicate that we would like to update download progress
+            if (msg.what == UPDATE_DOWNLOAD_PROGRESS) {
+                val downloadProgress: Int = msg.arg1
+
+                // Update your progress bar here.
+                Log.d(TAG, downloadProgress.toString())
+            }
+            true
+        }
+
+        val request = DownloadManager.Request(Uri.parse(newsletter.url))
+        request.setTitle(newsletter.title)
+        request.setDescription("Downloading...")
+        request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
+        request.setDestinationInExternalFilesDir(requireContext(), Environment.DIRECTORY_DOWNLOADS, fileName)
+
+        executeNetworkRequest(request)
+    }
+
+    @SuppressLint("Range")
+    private fun executeNetworkRequest(request: DownloadManager.Request) {
+
+        val manager = requireContext().getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager
+        val downloadId = manager.enqueue(request)
+
+        // Run a task in a background thread to check download progress
+        executor.execute {
+            var progress = 0
+            var isDownloadFinished = false
+            while (!isDownloadFinished) {
+                val cursor: Cursor = manager.query(DownloadManager.Query().setFilterById(downloadId))
+                if (cursor.moveToFirst()) {
+                    when (cursor.getInt(cursor.getColumnIndex(DownloadManager.COLUMN_STATUS))) {
+                        DownloadManager.STATUS_RUNNING -> {
+                            val totalBytes = cursor.getLong(cursor.getColumnIndex(DownloadManager.COLUMN_TOTAL_SIZE_BYTES))
+                            if (totalBytes > 0) {
+                                val downloadedBytes = cursor.getLong(cursor.getColumnIndex(DownloadManager.COLUMN_BYTES_DOWNLOADED_SO_FAR))
+                                progress = (downloadedBytes * 100 / totalBytes).toInt()
+                            }
+                        }
+
+                        DownloadManager.STATUS_SUCCESSFUL -> {
+                            progress = 100
+                            isDownloadFinished = true
+                        }
+
+                        DownloadManager.STATUS_PAUSED, DownloadManager.STATUS_PENDING -> {}
+                        DownloadManager.STATUS_FAILED -> isDownloadFinished = true
+                    }
+                    val message = Message.obtain()
+                    message.what = 1
+                    message.arg1 = progress
+                    mainHandler?.sendMessage(message)
+                }
+            }
+        }
+    }
+
+
+    private var localFileDownloadLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
         if (result.resultCode == Activity.RESULT_OK) {
 
             result.data?.data?.let { destUri ->
@@ -202,7 +234,7 @@ class NewsletterListingFragment : Fragment(), NewsletterAdapter.NewsLetterClickL
                 AlertDialog.Builder(requireContext())
                     .setTitle(getString(R.string.download_successful))
                     .setMessage(getString(R.string.open_downloads_folder))
-                    .setPositiveButton(getString(R.string.yes)) { _, _ ->
+                    .setPositiveButton(getString(R.string.proceed)) { _, _ ->
                         startActivity(Intent(DownloadManager.ACTION_VIEW_DOWNLOADS))
                     }
                     .setNegativeButton(getString(R.string.no)) { _, _ ->
@@ -225,6 +257,7 @@ class NewsletterListingFragment : Fragment(), NewsletterAdapter.NewsLetterClickL
 
     companion object {
         const val TAG = "NewsletterFragment"
+        const val UPDATE_DOWNLOAD_PROGRESS = 1
     }
 
     override fun onDestroyView() {
