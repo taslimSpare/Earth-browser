@@ -10,8 +10,6 @@ import android.database.Cursor
 import android.net.Uri
 import android.os.Bundle
 import android.os.Environment
-import android.os.Handler
-import android.os.Looper
 import android.os.Message
 import android.util.Log
 import android.view.LayoutInflater
@@ -25,6 +23,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import org.mozilla.gecko.util.ThreadUtils
 import org.mozilla.reference.browser.R
 import org.mozilla.reference.browser.databinding.FragmentNewsletterListingBinding
 import org.mozilla.reference.browser.ext.createProgressDialog
@@ -47,8 +46,6 @@ class NewsletterListingFragment : Fragment(), NewsletterAdapter.NewsLetterClickL
 
     // Use a background thread to check the progress of downloading
     private var executor: ExecutorService? = null
-
-    private var mainHandler: Handler? = null
 
     var file: File? = null
 
@@ -95,7 +92,7 @@ class NewsletterListingFragment : Fragment(), NewsletterAdapter.NewsLetterClickL
         }
     }
 
-    @SuppressLint("Range")
+
     override fun onNewsLetterClicked(newsletter: NewsletterAdapter.Newsletter) {
 
         // Show prompt for the user to enter their preferred file name
@@ -158,22 +155,8 @@ class NewsletterListingFragment : Fragment(), NewsletterAdapter.NewsLetterClickL
     private fun initRemoteDownload(fileName: String, newsletter: NewsletterAdapter.Newsletter) {
 
         // show progress dialog
-        downloadProgressDialog = requireContext().createProgressDialog(null, message = "Please wait")
+        downloadProgressDialog = requireContext().createProgressDialog(null, message = "Downloading...")
         downloadProgressDialog?.show()
-
-        // Use a handler to update progress bar on the main thread
-        mainHandler = Handler(Looper.getMainLooper()) { msg ->
-            // Indicate that we would like to update download progress
-            if (msg.what == UPDATE_DOWNLOAD_PROGRESS) {
-                val downloadProgress: Int = msg.arg1
-
-                downloadProgressDialog?.setMessage("$downloadProgress %")
-
-                // Update your progress bar here.
-                Log.d(TAG, downloadProgress.toString())
-            }
-            true
-        }
 
         val request = DownloadManager.Request(Uri.parse(newsletter.url))
         request.setTitle(newsletter.title)
@@ -212,7 +195,7 @@ class NewsletterListingFragment : Fragment(), NewsletterAdapter.NewsLetterClickL
                         DownloadManager.STATUS_SUCCESSFUL -> {
                             progress = 100
                             isDownloadFinished = true
-                            downloadProgressDialog?.dismiss()
+                            releaseResources()
                             nudgeToLaunchDownloads()
                         }
 
@@ -225,7 +208,6 @@ class NewsletterListingFragment : Fragment(), NewsletterAdapter.NewsLetterClickL
                     val message = Message.obtain()
                     message.what = 1
                     message.arg1 = progress
-                    mainHandler?.sendMessage(message)
                 }
             }
         }
@@ -253,19 +235,20 @@ class NewsletterListingFragment : Fragment(), NewsletterAdapter.NewsLetterClickL
     }
 
     private fun nudgeToLaunchDownloads() {
-        // Nudge user with an option to open the Downloads folder
-        requireContext().showAlertDialog(
-            title = getString(R.string.download_successful),
-            message = getString(R.string.open_downloads_folder),
-            callback = {
-                startActivity(Intent(DownloadManager.ACTION_VIEW_DOWNLOADS))
-            }
-        )
+        ThreadUtils.runOnUiThread {
+            // Nudge user with an option to open the Downloads folder
+            requireContext().showAlertDialog(
+                title = getString(R.string.download_successful),
+                message = getString(R.string.open_downloads_folder),
+                callback = {
+                    startActivity(Intent(DownloadManager.ACTION_VIEW_DOWNLOADS))
+                }
+            )
+        }
     }
 
     private fun releaseResources() {
         executor?.shutdown()
-        mainHandler?.removeCallbacksAndMessages(null)
         downloadProgressDialog?.cancel()
     }
 
@@ -276,7 +259,6 @@ class NewsletterListingFragment : Fragment(), NewsletterAdapter.NewsLetterClickL
 
     companion object {
         const val TAG = "NewsletterFragment"
-        const val UPDATE_DOWNLOAD_PROGRESS = 1
     }
 
     override fun onDestroyView() {
