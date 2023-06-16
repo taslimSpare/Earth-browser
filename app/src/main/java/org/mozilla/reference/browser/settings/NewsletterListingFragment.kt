@@ -17,7 +17,6 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
@@ -28,6 +27,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.mozilla.reference.browser.R
 import org.mozilla.reference.browser.databinding.FragmentNewsletterListingBinding
+import org.mozilla.reference.browser.ext.createProgressDialog
 import org.mozilla.reference.browser.ext.showAlertDialog
 import org.mozilla.reference.browser.ext.showEditTextDialogForFileName
 import org.mozilla.reference.browser.ext.showToast
@@ -36,6 +36,7 @@ import org.mozilla.reference.browser.testdata.testNewsletters
 import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
+import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 
 
@@ -45,11 +46,13 @@ class NewsletterListingFragment : Fragment(), NewsletterAdapter.NewsLetterClickL
     private val binding get() = _binding!!
 
     // Use a background thread to check the progress of downloading
-    private var executor = Executors.newFixedThreadPool(1)
+    private var executor: ExecutorService? = null
 
     private var mainHandler: Handler? = null
 
     var file: File? = null
+
+    private var downloadProgressDialog: AlertDialog? = null
 
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
@@ -154,11 +157,17 @@ class NewsletterListingFragment : Fragment(), NewsletterAdapter.NewsLetterClickL
 
     private fun initRemoteDownload(fileName: String, newsletter: NewsletterAdapter.Newsletter) {
 
+        // show progress dialog
+        downloadProgressDialog = requireContext().createProgressDialog(null, message = "Please wait")
+        downloadProgressDialog?.show()
+
         // Use a handler to update progress bar on the main thread
         mainHandler = Handler(Looper.getMainLooper()) { msg ->
             // Indicate that we would like to update download progress
             if (msg.what == UPDATE_DOWNLOAD_PROGRESS) {
                 val downloadProgress: Int = msg.arg1
+
+                downloadProgressDialog?.setMessage("$downloadProgress %")
 
                 // Update your progress bar here.
                 Log.d(TAG, downloadProgress.toString())
@@ -182,7 +191,10 @@ class NewsletterListingFragment : Fragment(), NewsletterAdapter.NewsLetterClickL
         val downloadId = manager.enqueue(request)
 
         // Run a task in a background thread to check download progress
-        executor.execute {
+
+        executor = Executors.newFixedThreadPool(1)
+
+        executor?.execute {
             var progress = 0
             var isDownloadFinished = false
             while (!isDownloadFinished) {
@@ -200,10 +212,15 @@ class NewsletterListingFragment : Fragment(), NewsletterAdapter.NewsLetterClickL
                         DownloadManager.STATUS_SUCCESSFUL -> {
                             progress = 100
                             isDownloadFinished = true
+                            downloadProgressDialog?.dismiss()
+                            nudgeToLaunchDownloads()
                         }
 
                         DownloadManager.STATUS_PAUSED, DownloadManager.STATUS_PENDING -> {}
-                        DownloadManager.STATUS_FAILED -> isDownloadFinished = true
+                        DownloadManager.STATUS_FAILED -> {
+                            isDownloadFinished = true
+                            downloadProgressDialog?.dismiss()
+                        }
                     }
                     val message = Message.obtain()
                     message.what = 1
@@ -230,24 +247,26 @@ class NewsletterListingFragment : Fragment(), NewsletterAdapter.NewsLetterClickL
                     }
                 }
 
-                // Nudge user with an option to open the Downloads folder
-                AlertDialog.Builder(requireContext())
-                    .setTitle(getString(R.string.download_successful))
-                    .setMessage(getString(R.string.open_downloads_folder))
-                    .setPositiveButton(getString(R.string.proceed)) { _, _ ->
-                        startActivity(Intent(DownloadManager.ACTION_VIEW_DOWNLOADS))
-                    }
-                    .setNegativeButton(getString(R.string.no)) { _, _ ->
-                        Toast.makeText(requireContext(), getString(R.string.navigate_to_downloads_later), Toast.LENGTH_SHORT).show()
-                    }
-                    .show()
+                nudgeToLaunchDownloads()
             }
         }
     }
 
+    private fun nudgeToLaunchDownloads() {
+        // Nudge user with an option to open the Downloads folder
+        requireContext().showAlertDialog(
+            title = getString(R.string.download_successful),
+            message = getString(R.string.open_downloads_folder),
+            callback = {
+                startActivity(Intent(DownloadManager.ACTION_VIEW_DOWNLOADS))
+            }
+        )
+    }
+
     private fun releaseResources() {
-        executor.shutdown()
+        executor?.shutdown()
         mainHandler?.removeCallbacksAndMessages(null)
+        downloadProgressDialog?.cancel()
     }
 
     override fun onStop() {

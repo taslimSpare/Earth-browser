@@ -12,10 +12,16 @@ import android.content.Intent.ACTION_SEND
 import android.content.Intent.EXTRA_SUBJECT
 import android.content.Intent.EXTRA_TEXT
 import android.content.Intent.FLAG_ACTIVITY_NEW_TASK
+import android.view.Gravity
 import android.view.ViewGroup.LayoutParams
 import android.widget.EditText
+import android.widget.LinearLayout
+import android.widget.ProgressBar
+import android.widget.TextView
 import android.widget.Toast
+import androidx.annotation.Dimension
 import androidx.annotation.StringRes
+import androidx.core.content.ContextCompat
 import mozilla.components.support.base.log.Log
 import mozilla.components.support.base.log.Log.Priority.WARN
 import org.mozilla.reference.browser.BrowserApplication
@@ -117,6 +123,35 @@ fun Context.showEditTextDialogForFileName(
         .setNegativeButton(getString(R.string.no)) { _, _ -> }
         .show()
 }
+
+
+fun Context.createProgressDialog(title: String?, message: String) =
+    AlertDialog.Builder(this)
+        .setView(LinearLayout(this).apply {
+            setPadding(40, 60, 40, 60)
+            orientation = LinearLayout.HORIZONTAL
+            gravity = Gravity.CENTER or Gravity.START
+            addView(ProgressBar(this@createProgressDialog).apply {
+                indeterminateDrawable.setTint(
+                    ContextCompat.getColor(
+                        this@createProgressDialog,
+                        R.color.photonWhite
+                    )
+                )
+            })
+            addView(TextView(this@createProgressDialog).apply {
+                text = message
+                gravity = Gravity.CENTER_VERTICAL
+                setTextColor(ContextCompat.getColor(this@createProgressDialog, R.color.photonBlack))
+                setTextSize(Dimension.SP, 14f)
+                setPadding(30, 0, 0, 0)
+            })
+        })
+        .apply {
+            title?.let {
+                setTitle(it)
+            }
+        }.create()
 
 
 /**
