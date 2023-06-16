@@ -102,7 +102,7 @@ fun Context.showAlertDialog(
         .setTitle(title)
         .setMessage(message)
         .setPositiveButton(getString(R.string.proceed)) { _, _ -> callback() }
-        .setNegativeButton(getString(R.string.no)) { _, _ -> }
+        .setNegativeButton(getString(R.string.cancel)) { _, _ -> }
         .show()
 }
 
@@ -136,7 +136,7 @@ fun Context.showEditTextDialogForFileName(
             hideSoftKeyboard(editText)
             callback(inputText)
         }
-        .setNegativeButton(getString(R.string.no)) { _, _ -> }
+        .setNegativeButton(getString(R.string.cancel)) { _, _ -> }
         .show()
 }
 

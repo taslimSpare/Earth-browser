@@ -212,7 +212,6 @@
     <string name="newsletter_loading_text">Fetching latest newsletters…</string>
 
     <string name="confirm">Confirm</string>
-    <string name="no">No</string>
     <string name="cancel">Cancel</string>
     <string name="dot_txt">.txt</string>
     <string name="enter_file_name">How do you want to save your file?</string>
