@@ -211,20 +211,18 @@
     <string name="click_indicator">Action indicator</string>
     <string name="newsletter_loading_text">Fetching latest newsletters…</string>
 
-    <string name="confirm">Confirm</string>
+    <string name="proceed">Proceed</string>
     <string name="cancel">Cancel</string>
+    <string name="confirm">Confirm</string>
     <string name="dot_txt">.txt</string>
     <string name="enter_file_name">How do you want to save your file?</string>
     <string name="proceed_to_download">Proceed to download %s?</string>
     <string name="download_successful">Download Successful</string>
     <string name="open_downloads_folder">Do you want to open your downloads folder?</string>
-    <string name="navigate_to_downloads_later">You can view the file anytime in your downloads</string>
 
     <string name="empty_file_name">File name cannot be empty</string>
     <string name="file_name_no_txt">File name must end in .txt</string>
 
     <string name="txt_extension">%s.txt</string>
-
-    <string name="proceed">Proceed</string>
 
 </resources>
