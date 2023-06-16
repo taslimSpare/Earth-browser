@@ -21,7 +21,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import org.mozilla.geckoview.GeckoSession
 import org.mozilla.reference.browser.R
 import org.mozilla.reference.browser.databinding.FragmentNewsletterListingBinding
 import org.mozilla.reference.browser.ext.wrapForTxt
@@ -35,8 +34,6 @@ class NewsletterListingFragment : Fragment(), NewsletterAdapter.NewsLetterClickL
     private var _binding: FragmentNewsletterListingBinding? = null
     private val binding get() = _binding!!
     var file: File? = null
-
-    private lateinit var geckoSession: GeckoSession
 
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {

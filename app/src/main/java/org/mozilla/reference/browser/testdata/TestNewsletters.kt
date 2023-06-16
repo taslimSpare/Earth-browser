@@ -10,15 +10,15 @@ val testNewsletters = listOf(
         id = "1",
         title = "January 2023 edition",
         url = "https://raw.githubusercontent.com/dwyl/english-words/master/words.txt",
-        shortDescription = "",
-        content = "Hi reader,\n\nWelcome to the pleasant month of March!\n\nIn today's world, the persistence of misogyny and gender-based violence is a grave concern that hinders progress towards an inclusive society.\n\nRooted in prejudice and discrimination, misogyny perpetuates injustice, while gender-based violence reinforces power imbalances. To dismantle these oppressive structures, we must foster respect, empathy, and equality.\n\nBy promoting inclusive education, enforcing laws, and engaging in collective action, we can create a future free from misogyny and gender-based violence, where everyone can live with dignity and security."
+        shortDescription = "A new year, a new reason to advocate for refugee rights",
+        content = ""
     ),
     NewsletterAdapter.Newsletter(
         id = "2",
         title = "February 2023 edition",
         url = "https://raw.githubusercontent.com/dwyl/english-words/master/words.txt",
-        shortDescription = "",
-        content = "Hi reader, \n\n Welcome to the cool month of April!\n\nEducation plays a paramount role in shaping a child's upbringing and future prospects. It empowers them with knowledge, critical thinking skills, and a broader understanding of the world.\n\nThrough education, children gain the tools to navigate challenges, pursue their passions, and contribute meaningfully to society. It fosters personal growth, cultivates values, and instills a lifelong love for learning. Education not only equips children with academic proficiency but also promotes social and emotional development, fostering empathy, tolerance, and respect for others.\n\nBy investing in quality education for every child, we invest in a brighter and more equitable future for all."
+        shortDescription = "A clean heart, a clean glass of water",
+        content = ""
     ),
     NewsletterAdapter.Newsletter(
         id = "1",
