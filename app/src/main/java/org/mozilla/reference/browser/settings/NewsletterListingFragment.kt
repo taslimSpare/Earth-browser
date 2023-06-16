@@ -10,7 +10,6 @@ import android.database.Cursor
 import android.net.Uri
 import android.os.Bundle
 import android.os.Environment
-import android.os.Message
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -159,7 +158,7 @@ class NewsletterListingFragment : Fragment(), NewsletterAdapter.NewsLetterClickL
         downloadProgressDialog?.show()
 
         val request = DownloadManager.Request(Uri.parse(newsletter.url))
-        request.setTitle(newsletter.title)
+        request.setTitle(fileName)
         request.setDescription("Downloading...")
         request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
         request.setDestinationInExternalFilesDir(requireContext(), Environment.DIRECTORY_DOWNLOADS, fileName)
@@ -174,26 +173,15 @@ class NewsletterListingFragment : Fragment(), NewsletterAdapter.NewsLetterClickL
         val downloadId = manager.enqueue(request)
 
         // Run a task in a background thread to check download progress
-
         executor = Executors.newFixedThreadPool(1)
 
         executor?.execute {
-            var progress = 0
             var isDownloadFinished = false
             while (!isDownloadFinished) {
                 val cursor: Cursor = manager.query(DownloadManager.Query().setFilterById(downloadId))
                 if (cursor.moveToFirst()) {
                     when (cursor.getInt(cursor.getColumnIndex(DownloadManager.COLUMN_STATUS))) {
-                        DownloadManager.STATUS_RUNNING -> {
-                            val totalBytes = cursor.getLong(cursor.getColumnIndex(DownloadManager.COLUMN_TOTAL_SIZE_BYTES))
-                            if (totalBytes > 0) {
-                                val downloadedBytes = cursor.getLong(cursor.getColumnIndex(DownloadManager.COLUMN_BYTES_DOWNLOADED_SO_FAR))
-                                progress = (downloadedBytes * 100 / totalBytes).toInt()
-                            }
-                        }
-
                         DownloadManager.STATUS_SUCCESSFUL -> {
-                            progress = 100
                             isDownloadFinished = true
                             releaseResources()
                             nudgeToLaunchDownloads()
@@ -205,9 +193,6 @@ class NewsletterListingFragment : Fragment(), NewsletterAdapter.NewsLetterClickL
                             downloadProgressDialog?.dismiss()
                         }
                     }
-                    val message = Message.obtain()
-                    message.what = 1
-                    message.arg1 = progress
                 }
             }
         }
