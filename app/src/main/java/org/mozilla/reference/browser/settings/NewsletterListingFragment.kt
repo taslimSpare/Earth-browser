@@ -25,9 +25,9 @@ import kotlinx.coroutines.launch
 import org.mozilla.gecko.util.ThreadUtils
 import org.mozilla.reference.browser.R
 import org.mozilla.reference.browser.databinding.FragmentNewsletterListingBinding
-import org.mozilla.reference.browser.ext.createProgressDialog
 import org.mozilla.reference.browser.ext.showAlertDialog
 import org.mozilla.reference.browser.ext.showEditTextDialogForFileName
+import org.mozilla.reference.browser.ext.showProgressDialog
 import org.mozilla.reference.browser.ext.showToast
 import org.mozilla.reference.browser.ext.wrapForTxt
 import org.mozilla.reference.browser.testdata.testNewsletters
@@ -82,7 +82,9 @@ class NewsletterListingFragment : Fragment(), NewsletterAdapter.NewsLetterClickL
     }
 
     private fun fakeRefreshAction() {
+
         // Simulate 2-second API call during which the progress views are visible
+
         CoroutineScope(Dispatchers.Main).launch {
             binding.addonProgressOverlay.root.isVisible = true
             delay(2000)
@@ -103,7 +105,9 @@ class NewsletterListingFragment : Fragment(), NewsletterAdapter.NewsLetterClickL
             when {
                 fileName.isEmpty() -> requireContext().showToast(getString(R.string.empty_file_name))
                 !fileName.endsWith(getString(R.string.dot_txt)) -> requireContext().showToast(getString(R.string.file_name_no_txt))
-                else -> confirmDownload(fileName, newsletter)
+                else -> {
+                    confirmDownload(fileName, newsletter)
+                }
             }
         }
     }
@@ -154,7 +158,7 @@ class NewsletterListingFragment : Fragment(), NewsletterAdapter.NewsLetterClickL
     private fun initRemoteDownload(fileName: String, newsletter: NewsletterAdapter.Newsletter) {
 
         // show progress dialog
-        downloadProgressDialog = requireContext().createProgressDialog(null, message = "Downloading...")
+        downloadProgressDialog = requireContext().showProgressDialog(message = "Downloading...")
         downloadProgressDialog?.show()
 
         val request = DownloadManager.Request(Uri.parse(newsletter.url))
@@ -184,7 +188,7 @@ class NewsletterListingFragment : Fragment(), NewsletterAdapter.NewsLetterClickL
                         DownloadManager.STATUS_SUCCESSFUL -> {
                             isDownloadFinished = true
                             releaseResources()
-                            nudgeToLaunchDownloads()
+                            promptToLaunchDownloadsFolder()
                         }
 
                         DownloadManager.STATUS_PAUSED, DownloadManager.STATUS_PENDING -> {}
@@ -214,12 +218,12 @@ class NewsletterListingFragment : Fragment(), NewsletterAdapter.NewsLetterClickL
                     }
                 }
 
-                nudgeToLaunchDownloads()
+                promptToLaunchDownloadsFolder()
             }
         }
     }
 
-    private fun nudgeToLaunchDownloads() {
+    private fun promptToLaunchDownloadsFolder() {
         ThreadUtils.runOnUiThread {
             // Nudge user with an option to open the Downloads folder
             requireContext().showAlertDialog(

@@ -4,6 +4,7 @@
 
 package org.mozilla.reference.browser.ext
 
+import android.app.Activity
 import android.app.AlertDialog
 import android.content.ActivityNotFoundException
 import android.content.Context
@@ -13,7 +14,9 @@ import android.content.Intent.EXTRA_SUBJECT
 import android.content.Intent.EXTRA_TEXT
 import android.content.Intent.FLAG_ACTIVITY_NEW_TASK
 import android.view.Gravity
+import android.view.View
 import android.view.ViewGroup.LayoutParams
+import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import android.widget.LinearLayout
 import android.widget.ProgressBar
@@ -72,6 +75,18 @@ fun Context.share(text: String, subject: String = ""): Boolean {
 }
 
 /**
+ * Hide the soft keyboard.
+ */
+fun Context.hideSoftKeyboard(view: View) {
+    val inputMethodManager = this.getSystemService(
+        Activity.INPUT_METHOD_SERVICE
+    ) as InputMethodManager
+    inputMethodManager.hideSoftInputFromWindow(
+        view.windowToken, 0
+    )
+}
+
+/**
  *  Displays an [AlertDialog].
  *
  * @param [title] to be displayed on the [AlertDialog]
@@ -118,40 +133,43 @@ fun Context.showEditTextDialogForFileName(
         .setView(editText)
         .setPositiveButton(getString(R.string.proceed)) { _, _ ->
             val inputText = editText.text.toString().trim()
+            hideSoftKeyboard(editText)
             callback(inputText)
         }
         .setNegativeButton(getString(R.string.no)) { _, _ -> }
         .show()
 }
 
-
-fun Context.createProgressDialog(title: String?, message: String) =
-    AlertDialog.Builder(this)
+/**
+ *  Displays an [AlertDialog] that contains an progress layout.
+ *
+ * @param [message] to be displayed on the [AlertDialog]
+ * @return [AlertDialog]
+ */
+fun Context.showProgressDialog(message: String): AlertDialog {
+    return AlertDialog.Builder(this)
         .setView(LinearLayout(this).apply {
             setPadding(40, 60, 40, 60)
             orientation = LinearLayout.HORIZONTAL
             gravity = Gravity.CENTER or Gravity.START
-            addView(ProgressBar(this@createProgressDialog).apply {
+            addView(ProgressBar(this@showProgressDialog).apply {
                 indeterminateDrawable.setTint(
                     ContextCompat.getColor(
-                        this@createProgressDialog,
+                        this@showProgressDialog,
                         R.color.photonWhite
                     )
                 )
             })
-            addView(TextView(this@createProgressDialog).apply {
+            addView(TextView(this@showProgressDialog).apply {
                 text = message
                 gravity = Gravity.CENTER_VERTICAL
-                setTextColor(ContextCompat.getColor(this@createProgressDialog, R.color.photonBlack))
+                setTextColor(ContextCompat.getColor(this@showProgressDialog, R.color.photonBlack))
                 setTextSize(Dimension.SP, 14f)
                 setPadding(30, 0, 0, 0)
             })
         })
-        .apply {
-            title?.let {
-                setTitle(it)
-            }
-        }.create()
+        .create()
+}
 
 
 /**
