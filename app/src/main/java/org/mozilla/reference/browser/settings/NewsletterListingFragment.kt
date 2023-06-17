@@ -16,6 +16,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.FileProvider
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import kotlinx.coroutines.CoroutineScope
@@ -188,13 +189,17 @@ class NewsletterListingFragment : Fragment(), NewsletterAdapter.NewsLetterClickL
                         DownloadManager.STATUS_SUCCESSFUL -> {
                             isDownloadFinished = true
                             releaseResources()
-                            promptToLaunchDownloadsFolder()
+
+                            val localUri = cursor.getString(cursor.getColumnIndex(DownloadManager.COLUMN_LOCAL_URI))
+                            val fileUri = Uri.parse(localUri)
+
+                            promptToLaunchDownloadsFolder(uri = fileUri)
                         }
 
                         DownloadManager.STATUS_PAUSED, DownloadManager.STATUS_PENDING -> {}
                         DownloadManager.STATUS_FAILED -> {
                             isDownloadFinished = true
-                            downloadProgressDialog?.dismiss()
+                            releaseResources()
                         }
                     }
                 }
@@ -218,19 +223,36 @@ class NewsletterListingFragment : Fragment(), NewsletterAdapter.NewsLetterClickL
                     }
                 }
 
-                promptToLaunchDownloadsFolder()
+                promptToLaunchDownloadsFolder(file = file)
             }
         }
     }
 
-    private fun promptToLaunchDownloadsFolder() {
+    private fun promptToLaunchDownloadsFolder(file: File? = null, uri: Uri? = null) {
         ThreadUtils.runOnUiThread {
             // Nudge user with an option to open the Downloads folder
             requireContext().showAlertDialog(
                 title = getString(R.string.download_successful),
                 message = getString(R.string.open_downloads_folder),
                 callback = {
-                    startActivity(Intent(DownloadManager.ACTION_VIEW_DOWNLOADS))
+                    try {
+                        // try to open the file directly
+                        val intent = Intent(Intent.ACTION_VIEW)
+                        val fileUri = uri
+                            ?: file?.let { FileProvider.getUriForFile(requireContext(), "org.mozilla.reference.fileprovider", it) }
+                        intent.setDataAndType(fileUri, "text/plain")
+                        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+
+                        if (intent.resolveActivity(requireActivity().packageManager) != null) {
+                            startActivity(intent)
+                        } else {
+                            startActivity(Intent(DownloadManager.ACTION_VIEW_DOWNLOADS))
+                        }
+                    } catch (e: Exception) {
+                        // if any exception pops up, launch downloads folder
+                        Log.d(TAG, e.message.toString())
+                        startActivity(Intent(DownloadManager.ACTION_VIEW_DOWNLOADS))
+                    }
                 }
             )
         }
