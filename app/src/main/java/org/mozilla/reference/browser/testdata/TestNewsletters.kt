@@ -9,14 +9,14 @@ val testNewsletters = listOf(
     NewsletterAdapter.Newsletter(
         id = "1",
         title = "January 2023 edition",
-        url = "https://raw.githubusercontent.com/dwyl/english-words/master/words.txt",
+        url = "https://raw.githubusercontent.com/taslimSpare/Earth-browser/master/app/src/main/java/org/mozilla/reference/browser/testdata/January%202023%20edition.txt",
         shortDescription = "A new year, a new reason to advocate for refugee rights",
         content = ""
     ),
     NewsletterAdapter.Newsletter(
         id = "2",
         title = "February 2023 edition",
-        url = "https://raw.githubusercontent.com/dwyl/english-words/master/words.txt",
+        url = "https://raw.githubusercontent.com/taslimSpare/Earth-browser/master/app/src/main/java/org/mozilla/reference/browser/testdata/February%202023%20edition.txt",
         shortDescription = "A clean heart, a clean glass of water",
         content = ""
     ),
