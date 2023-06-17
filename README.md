@@ -12,7 +12,7 @@ You can install the APK directly using [this link](https://drive.google.com/driv
 
 ## Demo video
 
-If you would like to watch a demo video instead, click [this Google Drive](https://drive.google.com/file/d/11jlMpk6Xg1TQUk_xnU4fzLWmWSpHhCKm/view?usp=sharing) link.
+If you would like to watch a demo video instead, click [this Google Drive](https://drive.google.com/drive/folders/1RtFT1DvvWJg2eugDB35B3lB7QnoLwPoJ?usp=sharing) link.
 
 
 
@@ -41,12 +41,14 @@ Here are a few Android specific technologies that were explored in this task
 5) Extension functions
 6) File/FileInputStream/FileOutputStream
 7) ActivityResultContracts
+8) DownloadManager
+9) FileProvider
 
 
 
 ## Files changed
 
-To preview all files that were modified/changed, check out [this pull request](https://github.com/TaslimOseni/Earth-browser/pull/1).
+To preview all files that were modified/changed, check out [this pull request](https://github.com/TaslimOseni/Earth-browser/pull/1/files).
 
 
 ## License
