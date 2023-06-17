@@ -31,6 +31,16 @@
         android:name=".BrowserApplication"
         tools:ignore="UnusedAttribute">
 
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="org.mozilla.reference.fileprovider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths" />
+        </provider>
+
         <activity android:name=".BrowserActivity"
             android:launchMode="singleTask"
             android:resizeableActivity="true"
